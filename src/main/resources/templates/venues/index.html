@@ -1,0 +1,40 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}">
+<head>
+  <title>All Venues</title>
+</head>
+<body>
+  <div layout:fragment="content">
+  	<h1>All venues: </h1>
+
+	<form th:object="${venues}" th:action="@{/venues/search(keyword='$keyword')}" method="get">
+		<input type="text" placeholder="Search.." th:name="keyword">
+		<button type="submit">Submit</button>
+	</form>
+
+  	
+  	<span class="float-right">
+    	<a href="/venues/new" class="btn btn-primary" >
+    		<i class="fa fa-plus">
+    		</i>
+    		ADD VENUE
+    	</a>
+    </span>
+    
+  	<p></p>
+  	<p></p>
+  	<tr th:each="v : ${venues}">
+  	
+  		<p><h2><a th:text="${v.name}" th:href="@{/venues/{num}(num=${v.id})}"></a></h2></p>
+		<p>Address: <td th:text="${v.address}"></td></p>
+		<p>Postcode: <td th:text="${v.postcode}"></td></p>
+		<p>Capacity: <td th:text="${v.capacity}"></td></p>
+
+	
+	
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}">
+      
+<head>
+  <title>Update Event</title>
+</head>
+<body>
+
+  <div layout:fragment="content">
+    <h1>Update Event</h1>
+	<form th:action="@{/events/updateEvent/{num}(num=${id})}" th:object="${event}" method="post" name="updateform" onsubmit="return validation()">
+	  
+	      <label for="name">Name</label>
+	      <input class="form-control" id="ename" type="text" name="name"  autofocus="autofocus" th:value="${name}"/>
+	    
+	      <label for="date">Date</label>
+	      <input class="form-control" id="date" type="date" name="date" autofocus="autofocus" th:value="${date}"/>
+	    
+	      <label for="time">Time</label>
+	      <input class="form-control" id="time" type="time" name="time" autofocus="autofocus" th:value="${time}"/>
+	    
+	  		<label for="venue">Venue</label>
+	  	 	<select class="form-control" name="venue">
+			    <option th:each="v : ${venues}" th:value="${v.id}" th:text="${v.name}" th:selected="${v.id==event.venue.id}">
+			    </option>
+			</select>
+	    
+	  <button class="btn btn-primary" type="submit"><i class="fas fa-sign-in-alt" aria-hidden="true"></i> Update Event details</button>
+	  <a class="btn btn-warning" role="button" href="/events"><i class="fas fa-ban" aria-hidden="true"></i> Cancel</a>
+	  
+	  <script>
+
+	var date = new Date();
+	date.setDate(date.getDate() + 1);
+	date = date.toISOString().split('T')[0];
+	document.getElementsByName("date")[0].setAttribute('min', date);
+	
+</script>
+
+<script>
+	function validation()
+	{
+		
+		if (document.forms["updateform"]["name"].value == "" || document.forms["updateform"]["name"].value.length > 256 || document.forms["updateform"]["date"].value == ""  )
+		{
+			alert("type a name or a date in the future or check the length");
+			return false;
+		}
+		
+		
+		return true
+	}
+	
+</script> 
+	  
+	</form>
+  </div>
+
+</body>
+</html>

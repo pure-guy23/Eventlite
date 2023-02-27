@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <title layout:title-pattern="$LAYOUT_TITLE: $CONTENT_TITLE">EventLite</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <script src='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.js'></script>
+  <link href='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css' rel='stylesheet'/>
+  <link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="/webjars/font-awesome/css/all.min.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+</head>
+<body>
+  <div class="container">
+    <div sec:authorize="!isAuthenticated()">
+      <i class="fas fa-user-slash" aria-hidden="true"></i> Not signed in
+      <a class="btn btn-primary" role="button" th:href="@{/sign-in}">
+        <i class="fas fa-sign-in-alt" aria-hidden="true"></i> Sign in
+      </a>
+    </div>
+    <div sec:authorize="isAuthenticated()">
+      <form th:action="@{/sign-out}" method="post">
+        <i class="fas fa-user" aria-hidden="true"></i> Signed in as <span sec:authentication="name"></span>
+        <button type="submit" class="btn btn-warning"><i class="fas fa-sign-out-alt" aria-hidden="true"></i> Sign out</button>
+      </form>
+    </div>
+    <div layout:fragment="content">
+    <h1>All events</h1>
+    
+
+    <br></br>
+    <h1>Search for an event:</h1>
+	<form th:object="${eventsUpcoming}" th:action="@{/events/search(keyword='$keyword')}" method="get">
+		<input type="text" placeholder="Search.." th:name="keyword">
+		<button  class="btn btn-primary" type="submit">Submit</button>
+		<button class="btn btn-secondary" type="reset">&#128683; Clear</button>
+	</form>
+	<br></br>
+	<br></br>
+	<h1>Upcoming events</h1>
+
+     <table class="table table-striped table-hover">
+      <thead>
+        <tr>
+          <th><i class="fas fa-bolt"></i> Event</th>
+          <th><i class="fas fa-map-marker-alt"></i> Venue</th>
+          <th><i class="fas fa-calendar"></i> Date</th>
+          <th><i class="fas fa-clock"></i> Time</th>
+          <th><a sec:authorize="isAuthenticated()" i class="fas fa-bolt"></i> Delete</th>
+          <th><a sec:authorize="isAuthenticated()" i class="fas fa-bolt"></i> Update</th>
+          
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="e : ${eventsUpcoming}">
+          <td><a th:href="@{/events/{id}(id=${e.id})}" th:text="${e.name}" </a></td>
+          <td><a th:href="@{/venues/{id}(id=${e.venue.id})}" th:text="${e.venue.name}" </a> Event venue</td>
+          <td th:text="${{e.date}}">Event date</td>
+          <td th:text="${{e.time}}">Event time</td>
+          <td>
+          <form a sec:authorize="isAuthenticated()" th:action="@{/events/{num}(num=${e.id})}" th:method="delete">
+      		<button type="submit" class="btn btn-danger"><i class="fas fa-trash" aria-hidden="true"></i> Delete</button>
+	      </form>
+	    	</td>
+    		<td>
+    		<a sec:authorize="isAuthenticated()" th:href="@{/events/updateEvent/{id}(id=${e.id})}" class="btn btn-info"><i class="fas fa-user-edit ml-2"></i></a>
+    		</td>
+             
+        </tr>
+       
+        
+      </tbody>
+    </table>
+	<br></br>
+    <h1>Previous events</h1>
+
+    <table class="table table-striped table-hover">
+      <thead>
+        <tr>
+          <th><i class="fas fa-bolt"></i> Event</th>
+          <th><i class="fas fa-map-marker-alt"></i> Venue</th>
+          <th><i class="fas fa-calendar"></i> Date</th>
+          <th><i class="fas fa-clock"></i> Time</th>
+          <th><a sec:authorize="isAuthenticated()" i class="fas fa-bolt"></i> Delete</th>
+          <th><a sec:authorize="isAuthenticated()" i class="fas fa-bolt"></i> Update</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="e : ${eventsPast}">
+			  <td><a th:href="@{/events/{id}(id=${e.id})}" th:text="${e.name}" </a></td>
+	          <!--<td th:text="${e.name}">My Event</td>-->   
+	          <td><a th:href="@{/venues/{id}(id=${e.venue.id})}" th:text="${e.venue.name}" </a> Event venue</td>
+	          <td th:text="${{e.date}}">Event date</td>
+	          <td th:text="${{e.time}}">Event time</td>
+	          <td>
+          <form a sec:authorize="isAuthenticated()" th:action="@{/events/{num}(num=${e.id})}" th:method="delete">
+      		<button type="submit" class="btn btn-danger"><i class="fas fa-trash" aria-hidden="true"></i> Delete</button>
+	      </form>
+	    	</td>
+    		<td>
+    		<a sec:authorize="isAuthenticated()" th:href="@{/events/updateEvent/{id}(id=${e.id})}" class="btn btn-info"><i class="fas fa-user-edit ml-2"></i></a>
+    		</td>
+    	</tr>
+      </tbody>
+    </table>
+	<br></br>
+    <h1>Tweets</h1>
+
+    <table class="table table-striped table-hover">
+      <thead>
+        <tr>
+            <th><i class="fas fa-calendar"></i> Date</th>
+     		<th></th>
+
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="t : ${tweets}">
+			  <td><a th:text="${{t.getCreatedAt()}}"> </a></td>
+	          <td><a th:href="@{https://twitter.com/{user}/status/{id}(user=${t.getUser().getId()}, id=${t.getId()})}" th:text="${{t.getText()}}"></a></td>
+
+      </tbody>
+    </table>
+    </div>
+    <span>
+    	<a href="/events/new" class="btn btn-primary" >
+    		<i class="fa fa-plus">
+    		</i>
+    		ADD EVENT
+    	</a>
+    </span>
+  </div>
+  <br>
+
+  <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+  <script type="text/javascript" src="/webjars/popper.js/umd/popper.min.js"></script>
+  <script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+  
+  <div id='map' style='height: 300px;  margin:0 auto;padding-top: 100px'></div>
+  <script th:inline="javascript">
+  
+   mapboxgl.accessToken = 'pk.eyJ1IjoiZXZlbnRsaXRlLWYxMiIsImEiOiJjbDFmaXZpZGkwMzAzM2ltcGYwNDkydzJnIn0.sG5gqWfu65hN5_wrHgv1tQ';
+   
+   var events = [[${eventsUpcoming}]];
+   var locations = [];
+   
+   var map = new mapboxgl.Map({
+     container: 'map',
+     style: 'mapbox://styles/mapbox/streets-v11',
+     center: [0, 0],
+     zoom: 8
+   });
+   
+   map.easeTo({
+   		padding: {
+   			left: 100,
+   			right: 100,
+   			top: 100,
+   			bottom: 100
+   		},
+   		duration: 0
+   });
+   
+   map.addControl(new mapboxgl.NavigationControl());
+   
+   const bound = (points) => {
+   		const s = Math.min(...points.map((p) => p[1]));
+   		const w = Math.min(...points.map((p) => p[0]));
+   		const n = Math.max(...points.map((p) => p[1]));
+   		const e = Math.max(...points.map((p) => p[0]));
+   		map.fitBounds([
+   			[w, s],
+   			[e, n]
+   		])
+   }
+   
+   for (const e of Object.keys(events)){
+		locations.push(events[e]);
+   }
+	bound(locations.map((e) => [e.venue.longitude, e.venue.latitude]));
+   
+   for (loc in locations){
+   		marker(locations[loc])
+   } 
+   
+   function marker(event, index) {
+   		var coord = [event.venue.longitude, event.venue.latitude];
+   		var popup = new mapboxgl.Popup({offset: 10}).setHTML('<h3>' + event.name + "</h3><p style='text-align:center'>" + "Start at " + event.time + "</p>");
+   		var marker = new mapboxgl.Marker().setLngLat(coord).setPopup(popup).addTo(map);
+   }
+   
+  </script>
+  
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}">
+<head>
+  <title>Separate events</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <script src='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.js'></script>
+  <link href='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css' rel='stylesheet' />
+  
+</head>
+<body>
+  <div layout:fragment="content">
+    <p th:text="|Event - ${event.name}|" > Default Name </p>
+    <p th:text="|Date: ${event.date}|" > Default Date</p>
+    <p th:text="|Time: ${event.time}|"> Default Time </p>
+    <a th:text="|Venue: ${event.venue.name}|" th:href="@{/venues/{num}(num=${event.venue.id})}"> Default Venue </a>
+    <br>
+    <p th:text="|Description: ${event.description}|"> Default Description </p>
+    <br>
+    Tweet about it!
+  	<form th:action="@{/events/{id}(id=${event.id})}" method="post">
+		<input type="text" name="message" th:placeholder="${event.name}">
+		<button type="submit">Send tweet</button>
+	</form>
+  	<div th:if="${twitter_success}" class="alert alert-success" style="background-color: greenyellow">
+      <span style="font-weight: bold" th:text="${twitter_success}"></span>
+    </div>
+    <div th:if="${twitter_error}" class="alert alert-failure" style="background-color: red">
+      <span style="font-weight: bold" th:text="${twitter_error}"></span>
+    </div>
+  <div id='map' style='height: 300px;  margin:0 auto;padding-top: 100px'></div>
+  	<script th:inline="javascript">
+	  mapboxgl.accessToken = 'pk.eyJ1IjoiZXZlbnRsaXRlLWYxMiIsImEiOiJjbDFmaXZpZGkwMzAzM2ltcGYwNDkydzJnIn0.sG5gqWfu65hN5_wrHgv1tQ';
+	  var event = [ [[${event.venue.longitude}]], [[${event.venue.latitude}]] ];
+	  var map = new mapboxgl.Map({
+		container: 'map',
+		style: 'mapbox://styles/mapbox/streets-v11',
+		center: event,
+		zoom: 8
+	  });
+	  
+	  marker(event);
+	  
+	  function marker(coord, index) {
+	  			var popup = new mapboxgl.Popup({offset: 10}).setHTML('<h3>' + [[${event.name}]] + "</h3><p style='text-align:center'>" + "Start at " + [[${event.time}]] + "</p>");
+	  			var marker = new mapboxgl.Marker().setLngLat(coord).setPopup(popup).addTo(map);
+	  }
+  	</script>
+
+  </div>
+  
+  
+
+</body>
+</html>

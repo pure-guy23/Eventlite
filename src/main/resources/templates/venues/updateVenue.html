@@ -1,0 +1,35 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}">
+      
+<head>
+  <title>Update Venue</title>
+</head>
+<body>
+
+  <div layout:fragment="content">
+    <h1>Update Event</h1>
+	<form th:action="@{/venues/updateVenue/{num}(num=${venue.id})}" th:object="${venue}" method="post">
+	  
+	      <label for="name">Name</label>
+	      <input class="form-control" id="ename" type="text" name="name"  autofocus="autofocus" th:value="${venue.name}"/>
+	    
+	      <label for="address">Address</label>
+	      <input class="form-control" id="Address" type="text" name="address" autofocus="autofocus" th:value="${venue.address}"/>
+	    
+	     <label for="postcode">Postcode</label>
+	  	  <input class="form-control" id="postcode" type="text" name="postcode" autofocus="autofocus" th:value="${venue.postcode}"/>
+	    
+	  	  <label for="capacity">Capacity</label>
+	  	  <input class="form-control" id="capacity" type="text" name="capacity" autofocus="autofocus" th:value="${venue.capacity}"/>
+	  	 	
+	    
+	  <button class="btn btn-primary" type="submit"><i class="fas fa-sign-in-alt" aria-hidden="true"></i> Update Venue details</button>
+	  <a class="btn btn-warning" role="button" href="/venues"><i class="fas fa-ban" aria-hidden="true"></i> Cancel</a>
+	</form>
+	
+  </div>
+
+</body>
+</html>
